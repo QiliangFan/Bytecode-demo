@@ -45,3 +45,11 @@ class Link(models.Model):
 
     class Meta:
         db_table = "link"
+
+class Topo(models.Model):
+    src_switch = IntegerField(name="src_switch",null=False)
+    dst_switch = IntegerField(name="dst_switch",null=False)
+    capacity = IntegerField(name="capacity",null=False)
+
+    class Meta:
+        db_table = "topo"
