@@ -47,15 +47,14 @@ class Link(models.Model):
     
 class SFlow(models.Model):
 
-    srcip = CharField(name='srcip',max_length=30,null=False)
-    dstip = CharField(name='dstip',max_length=30,null=False)
-    ipType = CharField(name='ipType',max_length=30,null=False)
-    swip = ForeignKey(to=Switch, on_delete=models.CASCADE)
-    swPort = ForeignKey(to=Port,on_delete=models.CASCADE)
-    srcDc = CharField(name='srcDc',max_length=30,null=False)
-    dstDc = CharField(name='dstDc',max_length=30,null=False)
-    srcPsm = CharField(name='srcPsm',max_length=30,null=False)
-    dstPsm = CharField(name='dstPsm',max_length=30,null=False)
+    src_ip = CharField(name='srcip',max_length=30,null=False)
+    dst_ip = CharField(name='dstip',max_length=30,null=False)
+    ip_type = CharField(name='ipType',max_length=30,null=False)
+    sw_port = ForeignKey(to=Port,on_delete=models.CASCADE)
+    src_dc = CharField(name='srcDc',max_length=30,null=False)
+    dst_dc = CharField(name='dstDc',max_length=30,null=False)
+    src_psm = CharField(name='srcPsm',max_length=30,null=False)
+    dst_psm = CharField(name='dstPsm',max_length=30,null=False)
     bytes = IntegerField(name='bytes',null=False)
     
     class Dir(models.IntegerChoices):
