@@ -23,9 +23,12 @@ class Switch(models.Model):
 
 class Port(models.Model):
     
+    id = IntegerField(name="id",primary_key=True)
     name = CharField(name="name", max_length=30, null=False)
-    switch = ForeignKey(to=Switch, on_delete=models.CASCADE)
-    max_speed = IntegerField(name="max_speed", null=False)
+    real_name = CharField(name="real_name", max_length=30, null=False)
+    switch_id = ForeignKey(to=Switch, on_delete=models.CASCADE)
+    speed = IntegerField(name="speed", null=False)
+    is_shutdown = IntegerField(name="is_shutdown", null=False)
 
     class Meta:
 
@@ -36,7 +39,7 @@ class Link(models.Model):
     src_port = ForeignKey(to=Port, on_delete=models.CASCADE)
     dst_port = ForeignKey(to=Port, on_delete=models.CASCADE)
 
-    max_speed = IntegerField(name="max_speed", )
+    max_speed = IntegerField(name="max_speed", null=False)
 
     class Meta:
         db_table = "link"
