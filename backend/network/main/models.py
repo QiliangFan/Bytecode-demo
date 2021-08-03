@@ -57,11 +57,11 @@ class SFlow(models.Model):
     srcPsm = CharField(name='srcPsm',max_length=30,null=False)
     dstPsm = CharField(name='dstPsm',max_length=30,null=False)
     bytes = IntegerField(name='bytes',null=False)
-
+    
     class Dir(models.IntegerChoices):
         dir_1=1
         dir_0=0
     dir = IntegerField(name='dir',choices=Dir.choices)     
     class Meta:
 
-        db_table = "SFlow"
+        db_table = "sflow"
