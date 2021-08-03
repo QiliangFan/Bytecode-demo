@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.enums import Choices
 from django.db.models.fields import *
 from django.db.models.fields.related import ForeignKey
 
