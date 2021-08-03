@@ -29,7 +29,7 @@ class Port(models.Model):
     switch_id = ForeignKey(to=Switch, on_delete=models.CASCADE)
     speed = IntegerField(name="speed", null=False)
     is_shutdown = IntegerField(name="is_shutdown", null=False)
-
+    
     class Meta:
 
         db_table = "port"
