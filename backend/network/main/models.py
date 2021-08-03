@@ -4,13 +4,6 @@ from django.db.models.fields.related import ForeignKey
 
 # Create your models here.
 
-class Subnet(models.Model):
-
-
-    class Meta:
-        db_table = "subnet"
-
-
 class Switch(models.Model):
 
     id = CharField(name='id',max_length=30,null=False,db_index=True,primary_key=True)
@@ -22,6 +15,18 @@ class Switch(models.Model):
     class Meta:
 
         db_table = "switch"
+
+class Subnet(models.Model):
+
+    switch = ForeignKey(to=Switch, on_delete=models.CASCADE)
+    ip = CharField(name = "ip", max_length=30)
+    prefix = CharField(name = "prefix", max_length=30)
+    ip6 = CharField(name = "ip6", max_length=30)
+    prefix6 = CharField(name = "prefix6", max_length=30)
+
+    class Meta:
+        db_table = "subnet"
+
 
 class Port(models.Model):
     
