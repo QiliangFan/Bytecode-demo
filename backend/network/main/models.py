@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.expressions import F
 from django.db.models.fields import *
 from django.db.models.fields.related import ForeignKey
 
@@ -12,10 +13,11 @@ class Subnet(models.Model):
 
 
 class Switch(models.Model):
-
-    ip = CharField(name="ip", max_length=30, null=False, db_index=True)
-    ip6 = CharField(name="ipv6", max_length=30, null=True, db_index=True)   # not useful as ip
-    data_center = CharField(name="data_center", max_length=30, null=False, db_index=True)
+    
+    id = models.CharField(name='id',max_length=30,null=False,db_index=True,primary_key=True)
+    ip = CharField(name="ip", max_length=30, null=False)
+    ip6 = CharField(name="ipv6", max_length=30, null=True)   # not useful as ip
+    data_center = CharField(name="data_center", max_length=30, null=False)
 
     class Meta:
 
