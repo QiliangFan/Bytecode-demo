@@ -12,7 +12,7 @@ class Subnet(models.Model):
 
 
 class Switch(models.Model):
-
+    #test
     ip = CharField(name="ip", max_length=30, null=False, db_index=True)
     ip6 = CharField(name="ipv6", max_length=30, null=True, db_index=True)   # not useful as ip
     data_center = CharField(name="data_center", max_length=30, null=False, db_index=True)
