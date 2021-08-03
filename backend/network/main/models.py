@@ -5,6 +5,12 @@ from django.db.models.fields.related import ForeignKey
 
 # Create your models here.
 
+class Subnet(models.Model):
+
+    class Meta:
+        db_table = "subnet"
+
+
 class Switch(models.Model):
 
     id = CharField(name='id',max_length=30,null=False,db_index=True,primary_key=True)
@@ -12,22 +18,9 @@ class Switch(models.Model):
     ip6 = CharField(name="ipv6", max_length=30, null=True)   # not useful as ip
     data_center = CharField(name="data_center", max_length=30, null=False)
 
-
     class Meta:
 
         db_table = "switch"
-
-class Subnet(models.Model):
-
-    switch = ForeignKey(to=Switch, on_delete=models.CASCADE)
-    ip = CharField(name = "ip", max_length=30)
-    prefix = CharField(name = "prefix", max_length=30)
-    ip6 = CharField(name = "ip6", max_length=30)
-    prefix6 = CharField(name = "prefix6", max_length=30)
-
-    class Meta:
-        db_table = "subnet"
-
 
 class Port(models.Model):
     
@@ -46,8 +39,26 @@ class Port(models.Model):
 class Link(models.Model):
     src_port = ForeignKey(to=Port, on_delete=models.CASCADE)
     dst_port = ForeignKey(to=Port, on_delete=models.CASCADE)
-
     max_speed = IntegerField(name="max_speed", null=False)
 
     class Meta:
+
         db_table = "link"
+    
+class SFlow(models.Model):
+
+    srcip = CharField(name='srcip',max_length=30,null=False)
+    dstip = CharField(name='dstip',max_length=30,null=False)
+    ipType = CharField(name='ipType',max_length=30,null=False)
+    swip = ForeignKey(to=Switch, on_delete=models.CASCADE)
+    swPort = ForeignKey(to=Port,on_delete=models.CASCADE)
+    srcDc = CharField(name='srcDc',max_length=30,null=False)
+    dstDc = CharField(name='dstDc',max_length=30,null=False)
+    srcPsm = CharField(name='srcPsm',max_length=30,null=False)
+    dstPsm = CharField(name='dstPsm',max_length=30,null=False)
+    bytes = IntegerField(name='bytes',null=False)
+    dir = [(1,'1'),(0,'0')]
+     
+    class Meta:
+
+        db_table = "SFlow"
