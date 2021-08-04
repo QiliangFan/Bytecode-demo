@@ -6,5 +6,5 @@ class MainConfig(AppConfig):
 
     def ready(self) -> None:
         pass
-        from main.inititialize import init
-        init()
+        # from main.inititialize import init
+        # init()

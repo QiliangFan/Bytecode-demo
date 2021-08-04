@@ -14,14 +14,12 @@ class Switch(models.Model):
     data_center = CharField(max_length=30, null=False)
 
 
-
 class Subnet(models.Model):
     switch = ForeignKey(to=Switch, on_delete=models.CASCADE, related_name="sw_subnet")
     ip = CharField(max_length=30)
     prefix = CharField(max_length=30)
     ip6 = CharField(max_length=30)
     prefix6 = CharField(max_length=30)
-
 
 
 class Port(models.Model):
