@@ -23,7 +23,6 @@ class Subnet(models.Model):
 
 
 
-
 class Port(models.Model):
     
     id = IntegerField(primary_key=True)
