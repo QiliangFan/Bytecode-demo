@@ -38,6 +38,7 @@ def get_dc_topo(request: HttpRequest):
             "values":cross_res["bytes__sum"] * 8 / 10,
             "label": "10Gbps"
         })
+    edges.sort(key=lambda item: item["from"], reverse=True)
 
     return JsonResponse({
         "data": {
