@@ -62,17 +62,27 @@ def extract_sf(sf: pd.Series):
         port_obj = Port.objects.get(Q(switch_id = switch_obj.id) & Q(name = sw_port))
     except:
         return
-    sflow_obj = SFlow(src_ip=src_ip,
-                      dst_ip=dst_ip,
-                      ip_type=ip_type,
-                      sw_port=port_obj,
-                      src_dc=src_dc,
-                      dst_dc=dst_dc,
-                      src_psm=src_psm,
-                      dst_psm=dst_psm,
-                      bytes=bytes,
-                      dir=dir)
-    return sflow_obj
+    if SFlow.objects.filter(Q(src_ip=src_ip) & 
+                            Q(dst_ip=dst_ip) &
+                            Q(ip_type=ip_type) &
+                            Q(sw_port__id=port_obj.id) &
+                            Q(src_dc=src_dc) &
+                            Q(dst_dc=dst_dc) &
+                            Q(src_psm=src_psm) &
+                            Q(dst_psm=dst_psm) &
+                            Q(bytes=bytes) &
+                            Q(dir=dir)).count() == 0:
+        sflow_obj = SFlow(src_ip=src_ip,
+                        dst_ip=dst_ip,
+                        ip_type=ip_type,
+                        sw_port=port_obj,
+                        src_dc=src_dc,
+                        dst_dc=dst_dc,
+                        src_psm=src_psm,
+                        dst_psm=dst_psm,
+                        bytes=bytes,
+                        dir=dir)
+        sflow_obj.save()
 
 def insert_subnet():
     i = 0
@@ -84,24 +94,20 @@ def insert_subnet():
             continue
 
         subnet = Subnet(switch=switch_obj, ip=ip, prefix=prefix, ip6=ip6, prefix6=prefix6)
-        subnet_list.append(subnet)
-        i += 1
+        if Subnet.objects.filter(Q(switch__id=switch_obj.id) & Q(ip=ip) & Q(ip6=ip6) & Q(prefix6=prefix6)).count() == 0:
+            subnet_list.append(subnet)
+            i += 1
     Subnet.objects.bulk_create(subnet_list)
     print(f"insert subnet: {i}")
 
 
 def insert_sflow():
-    sf_list = []
+    
     for index, sf in inner_flow.iterrows():
-        res = extract_sf(sf)
-        if res is not None:
-            sf_list.append(res)
-
+        extract_sf(sf)
+        
     for index, sf in cross_flow.iterrows():
-        res = extract_sf(sf)
-        if res is not None:
-            sf_list.append(res)
-    SFlow.objects.bulk_create(sf_list)
+        extract_sf(sf)
 
 def insert_link():
     link_list = []
@@ -113,14 +119,17 @@ def insert_link():
         if z_port_obj is None:
             continue
         link_obj = Link(src_port=a_port_obj, dst_port=z_port_obj, max_speed=max(a_port_obj.speed, z_port_obj.speed))
-        link_list.append(link_obj)
+        if Link.objects.filter(Q(src_port__id=a_port_obj.id) & 
+                               Q(dst_port__id=z_port_obj.id) & 
+                               Q(max_speed=max(a_port_obj.speed, z_port_obj.speed))).count() == 0:
+            link_list.append(link_obj)
     Link.objects.bulk_create(link_list)
 
 def init():
     print("init........")
 
-    insert_link()
-    insert_subnet()
+    # insert_link()
+    # insert_subnet()
     insert_sflow()
 
     # link
