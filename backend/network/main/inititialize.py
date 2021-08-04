@@ -9,7 +9,7 @@ from multiprocessing import Process
 data_root = "/home/camp/data"
 link_path = os.path.join(data_root, "link.csv")
 inner_flow_path = os.path.join(data_root, "inner_sflow.csv")
-cross_flow_path = os.path.join(data_root, "link.csv")
+cross_flow_path = os.path.join(data_root, "cross_datacenter_sflow.csv")
 state_switch_path = os.path.join(data_root, "md_state_switch.csv")
 port_path = os.path.join(data_root, "port.csv")
 sub_net_path = os.path.join(data_root, "subnet.csv")
@@ -24,6 +24,9 @@ sub_net = pd.read_csv(sub_net_path)
 
 def extract_port(port_id: int):
     port_dt = port[port["id"] == port_id]
+    if len(port_dt) == 0:
+        return None
+
     switch_id = int(port_dt["switch_id"].values[0])
     
     a_switch = state_switch[state_switch["id"] == switch_id]
@@ -104,19 +107,23 @@ def insert_link():
 def init():
     print("init........")
 
+    insert_link()
+    insert_subnet()
+    insert_sflow()
+
     # link
-    p1 = Process(target=insert_link, args=())
+    # p1 = Process(target=insert_link, args=())
 
-    # subnet
-    p2 = Process(target=insert_subnet, args=())
+    # # subnet
+    # p2 = Process(target=insert_subnet, args=())
 
-    # sflow
-    p3 = Process(target=insert_sflow, args=())
+    # # sflow
+    # p3 = Process(target=insert_sflow, args=())
 
-    p1.start()
-    p2.start()
-    p3.start()
-    p1.join()
-    p2.join()
-    p3.join()
+    # p1.start()
+    # p2.start()
+    # p3.start()
+    # p1.join()
+    # p2.join()
+    # p3.join()
 
