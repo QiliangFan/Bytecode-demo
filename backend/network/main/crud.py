@@ -3,6 +3,7 @@ Database CRUD
 """
 from typing import List
 from main.models import Port, Link, Subnet, Switch, SFlow
+
 from django.db.models import Q, F
 import ipaddress
 
@@ -23,7 +24,7 @@ def get_tor(ip: str) -> Switch:
     get TOR switch
     """
     if "." in ip:  # ipv4
-            ip = ".".join(ip.split(".")[:2])
+        ip = ".".join(ip.split(".")[:2])
     elif ":" in ip:
         ip = ":".join(ip.split(":")[:3])
     else:
@@ -77,3 +78,4 @@ def get_alL_cross_sflow(dir: int = None) -> List[SFlow]:
         sflows = sflows.filter(dir = dir)
     sflows = list(sflows)
     return sflows
+

@@ -83,7 +83,7 @@ def insert_subnet():
         except:
             continue
 
-        subnet = Subnet(switch=switch_obj, ip=ip, prefix=prefix, ip6=ip6, prefix6=prefix6)
+        subnet = Subnet(switch=switch_obj, ip=ip, prefix=prefix, ip6=ip6, prefix6=prefix6)g
         subnet_list.append(subnet)
         i += 1
     Subnet.objects.bulk_create(subnet_list)
@@ -91,6 +91,7 @@ def insert_subnet():
 
 
 def insert_sflow():
+
     sf_list = []
     for index, sf in inner_flow.iterrows():
         res = extract_sf(sf)
