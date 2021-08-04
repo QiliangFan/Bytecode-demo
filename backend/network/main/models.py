@@ -6,8 +6,9 @@ from django.db.models.fields.related import ForeignKey
 
 
 class Switch(models.Model):
-
+  
     id = CharField(max_length=30,null=False,db_index=False,primary_key=True)
+
     ip = CharField(max_length=30, null=False)
     ip6 = CharField(max_length=30, null=True, )   # not useful as ip
     data_center = CharField(max_length=30, null=False)
