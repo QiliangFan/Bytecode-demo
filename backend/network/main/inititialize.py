@@ -16,7 +16,9 @@ sub_net_path = os.path.join(data_root, "subnet.csv")
 
 link = pd.read_csv(link_path)
 inner_flow = pd.read_csv(inner_flow_path)
+inner_flow = inner_flow[:int(len(inner_flow)//10)]
 cross_flow = pd.read_csv(cross_flow_path)
+cross_flow = cross_flow[:int(len(cross_flow))//10]
 state_switch = pd.read_csv(state_switch_path)
 port = pd.read_csv(port_path)
 sub_net = pd.read_csv(sub_net_path)
@@ -70,30 +72,40 @@ def extract_sf(sf: pd.Series):
                       dst_psm=dst_psm,
                       bytes=bytes,
                       dir=dir)
-    sflow_obj.save()
+    return sflow_obj
 
 def insert_subnet():
     i = 0
+    subnet_list = []
     for _, (switch_id, ip, prefix, ip6, prefix6) in sub_net.iterrows():
         try:
             switch_obj = Switch.objects.get(id=switch_id)
         except:
             continue
 
-        subnet = Subnet(switch=switch_obj, ip=ip, prefix=prefix, ip6=ip6, prefix6=prefix6)
-        subnet.save()
+        subnet = Subnet(switch=switch_obj, ip=ip, prefix=prefix, ip6=ip6, prefix6=prefix6)g
+        subnet_list.append(subnet)
         i += 1
+    Subnet.objects.bulk_create(subnet_list)
     print(f"insert subnet: {i}")
 
 
 def insert_sflow():
+
+    sf_list = []
     for index, sf in inner_flow.iterrows():
-        extract_sf(sf)
+        res = extract_sf(sf)
+        if res is not None:
+            sf_list.append(res)
 
     for index, sf in cross_flow.iterrows():
-        extract_sf(sf)
+        res = extract_sf(sf)
+        if res is not None:
+            sf_list.append(res)
+    SFlow.objects.bulk_create(sf_list)
 
 def insert_link():
+    link_list = []
     for _, (_, a_port_id, z_port_id, _, _) in link.iterrows():
         a_port_obj = extract_port(a_port_id)
         if a_port_obj is None:
@@ -102,7 +114,8 @@ def insert_link():
         if z_port_obj is None:
             continue
         link_obj = Link(src_port=a_port_obj, dst_port=z_port_obj, max_speed=max(a_port_obj.speed, z_port_obj.speed))
-        link_obj.save()
+        link_list.append(link_obj)
+    Link.objects.bulk_create(link_list)
 
 def init():
     print("init........")
