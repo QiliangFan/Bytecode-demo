@@ -1,13 +1,32 @@
 from django.db.models.aggregates import Sum
-from main.models import SFlow, Link, Switch
+from main.models import SFlow, Link, Switch, Port
 from django.http import HttpResponse, HttpRequest
 from django.http.response import JsonResponse
 from django.db.models import F, Q
 from django.shortcuts import render
 from django.core.cache import cache
 from typing import cast
+import json
+from multiprocessing import Pool
 
 # Create your views here.
+def do_link(idx, link):
+    fr = link.src_port.switch.id
+    to = link.dst_port.switch.id
+    return {
+        'id': idx,
+        'from': fr,
+        "to": to,
+        "max_speed": link.max_speed
+    }, (fr, to)
+
+def do_sw(sw):
+    return {
+        "id": sw.id,
+        "value": 1,
+        "name": sw.ip if sw.ip != "nan" else sw.ip6,
+        "label": sw.ip if sw.ip != "nan" else sw.ip6,            
+    }
 
 def test(request: HttpRequest):
     return JsonResponse({
@@ -15,7 +34,6 @@ def test(request: HttpRequest):
     })
 
 def get_dc_topo(request: HttpRequest):
-    
     # compute DC map
     if cache.get("dc_map") is not None:
         dc_map = cache.get("dc_map")
@@ -79,6 +97,7 @@ def get_dc_topo(request: HttpRequest):
                     "id": i+1,
                     "from": fr,
                     "to": to,
+                    "max_speed": link.max_speed
                 })
         cache.set("edges", edges, 600)
 
@@ -108,6 +127,107 @@ def get_dc_topo(request: HttpRequest):
                 })
         sflows.sort(key=lambda map: map["edge_id"])
         cache.set("sflows", sflows, 600)
+
+    return JsonResponse({
+        "data": {
+            "nodes": nodes,
+            "edges": edges,
+            "sflows": sflows
+        }
+    })
+
+
+def get_dc_inner_topo(request: HttpRequest):
+    if request.method == "OPTIONS":
+        return JsonResponse({})
+
+    pool = Pool(32)
+    
+    
+    print(request.body)
+    print(request)
+    dc_name = json.loads(request.body)["name"]
+    print(dc_name)
+
+    nodes = []
+    edges = []
+    sflows = []
+
+    # nodes
+    if cache.get(f"inner_nodes_{dc_name}") is not None:
+        nodes = cache.get(f"inner_nodes_{dc_name}")
+    else:
+        switch_list = Switch.objects.filter(Q(data_center=dc_name))
+        print(switch_list.count())
+
+        nodes = pool.starmap(do_sw, [[sw] for sw in switch_list])
+        cache.set(f"inner_nodes_{dc_name}", nodes, 600)
+    print("nodes...")
+
+    # edges
+    if cache.get(f"inner_edges_{dc_name}") is not None:
+        edges = cache.get(f"inner_edges_{dc_name}")
+    else:
+        used = set()
+        link_list = list(Link.objects.filter(Q(src_port__switch__data_center=dc_name) & Q(dst_port__switch__data_center=dc_name)))
+        print(f"link count: {len(link_list)}")
+        res_list = pool.starmap(do_link, [(i, link)  for i, link in enumerate(link_list)])
+        for edge, tag in res_list:
+            if tag not in used:
+                used.add(tag)
+                edges.append(edge)
+
+        cache.set(f"inner_edges_{dc_name}", edges, 600)
+    print("edegs...")
+
+    # sflows
+    if cache.get(f"inner_sflows_{dc_name}") is not None:
+        sflows = cache.get(f"inner_sflows_{dc_name}")
+    else:
+        sflow_list = SFlow.objects.filter(Q(src_dc=dc_name) & Q(dst_dc=dc_name)).values("src_psm", "dir", "sw_port").annotate(Sum("bytes"))
+        
+        for i, sflow in enumerate(sflow_list):
+            try:
+                if sflow["dir"] == 1:
+                    src_port_id = sflow["sw_port"]
+                    src_port = Port.objects.get(id=src_port_id)
+                    dst_port = Link.objects.get(src_port__id=src_port_id).dst_port
+                    src_sw = src_port.switch.id
+                    dst_sw = dst_port.switch.id
+
+                else:  # 流入
+                    dst_port_id = sflow["sw_port"]
+                    dst_port = Port.objects.get(id=dst_port_id)
+                    src_port = Link.objects.get(dst_port__id=dst_port_id).src_port
+                    src_sw = src_port.switch.id
+                    dst_sw = dst_port.switch.id
+                
+                edge_id = -1
+                for edge in edges:
+                    if edge["from"] == src_sw and edge["to"] == dst_sw:
+                        edge_id = edge["id"]
+                if edge_id > -1:
+                    sflows.append({
+                        "id": i,
+                        "psm": sflow["src_psm"],
+                        "GB": sflow["bytes__sum"],
+                        "edge_id": edge_id
+                    })
+            except:
+                continue
+        cache.set(f"inner_sflows_{dc_name}", sflows, 600)
+    if cache.get(f"inner_sflows_filter_{dc_name}") is not None:
+        sflows = cache.get(f"inner_sflows_filter_{dc_name}")
+        edges = cache.get(f"inner_edges_filter_{dc_name}")
+        nodes = cache.get(f"inner_nodes_filter_{dc_name}")
+    else:
+        sflows.sort(key=lambda a: a["GB"], reverse=True)
+        sflows = sflows[:2000]
+        edges = [edge for edge in edges if any([edge["id"] == d["edge_id"] for d in sflows])]
+        nodes = [node for node in nodes if any([any([node["id"] == d["from"], node["id"] == d["to"]]) for d in edges])]
+        cache.set(f"inner_sflows_filter_{dc_name}", sflows, 600)
+        cache.set(f"inner_edges_filter_{dc_name}", edges, 600)
+        cache.set(f"inner_nodes_filter_{dc_name}", nodes, 600)
 
     return JsonResponse({
         "data": {

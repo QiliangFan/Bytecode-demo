@@ -28,13 +28,14 @@ SECRET_KEY = 'django-insecure-brthp9$-q+%*&t)jcv15xi&ccpjenlgj_9!&w#kntmtd$0ab67
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'LOCATION': '/var/tmp/django_cache',
     }
 }
+
+
 
 # Application definition
 
