@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>在线考试系统 - 教师用户</title>
+  <script src="../../js/jquery-3.3.1.min.js"></script>
+  <script src="../../js/vue.min.js"></script>
+  <script src="../../js/vue-resource.min.js"></script>
+  <script src="../../js/common.js"></script>
+  <script src="../../backend.js"></script>
+  <link rel="stylesheet" href="../../vendors/iconfonts/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="shortcut icon" href="../../images/favicon.png" />
+</head>
+
+<body class="content-wrapper">
+  <div class="page-header">
+  <h1>创建试题</h1>
+  </div>
+  <div class="card" id="app">
+    <div class="card-body">
+      <h3 class="card-title">创建试卷</h3>
+      <p class="card-description">请输入新试卷的名称</p>
+      <p><input type="text" class="form-control" name="newpaper" v-model="newpaper" placeholder="输入试题名称..."></p>
+      <button type="button" class="btn btn-gradient-success btn-block" @click="create()"><i class="mdi mdi-library-plus"></i> 创建试卷</button> 
+    </div>
+  </div>
+  <script src="../../js/paper-create.js"></script>
+</body>
+
+</html>

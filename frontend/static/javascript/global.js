@@ -1,0 +1,1 @@
+base_url_str = 'http://localhost:5000'

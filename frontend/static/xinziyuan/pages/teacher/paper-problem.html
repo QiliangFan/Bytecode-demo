@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>在线考试系统 - 试题详情</title>
+  <script src="../../js/jquery-3.3.1.min.js"></script>
+  <script src="../../js/vue.min.js"></script>
+  <script src="../../js/vue-resource.min.js"></script>
+  <script src="../../js/common.js"></script>
+  <script src="../../backend.js"></script>
+  <link rel="stylesheet" href="../../vendors/iconfonts/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/overdiv.css">
+  <link rel="shortcut icon" href="../../images/favicon.png" />
+</head>
+
+<body class="content-wrapper">
+<div class="float_top">
+  <button class="btn btn-inverse-info btn-sm" onclick="javascript:smoothscroll();"><i class="mdi mdi-format-vertical-align-top"></i> 返回顶部</button>
+</div>
+<div class="float_back">
+  <button class="btn btn-inverse-warning btn-sm" onclick="javascript:history.back(-1);"><i class="mdi mdi-arrow-left-bold-circle-outline"></i> 返回前页</button>
+</div>
+
+<div id="app">
+
+  <!-- 批量添加题目弹窗 -->
+   <div id="overdiv" class="card">
+    <div class="card-body">
+      <h2 class="card-title">批量导入试题</h2>
+      <p class="card-description">请下载 Excel 模板填写后上传：<a href="../../files/upload-problem-template.xls">下载模板</a></p>
+      <form>
+        <p><input type="file" id="upload_prolist" class="form-control"></p>
+        <p>
+          <button type="button" class="btn btn-gradient-primary btn-fw" @click="upload_paper()" /><i class="mdi mdi-cloud-upload"></i> 上传</button>
+          <button type="button" class="btn btn-light btn-fw" onclick="javascript:hide_div()" /><i class="mdi mdi-window-close"></i> 取消</button>
+        </p>
+      </form>
+      <div></div>
+    </div>
+  </div>
+  <div id="over"></div>
+
+  <div class="page-header">
+  <h1>试题管理</h1>
+  </div>
+
+  <!-- 试卷信息卡片 -->
+  <div class="row">
+    <div class="col-lg-4 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">试卷信息</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>项目</th><th>数据</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>试卷编号</td><td>{{ paper.pid }}</td></tr>
+              <tr><td>试卷名称</td><td>{{ paper.pname }}</td></tr>
+              <tr><td>出题老师</td><td>{{ paper.teaname }}</td></tr>
+              <tr>
+                <td>是否开放</td>
+                <td v-if="paper.penabled == 'no'">否</td><td v-if="paper.penabled == 'yes'">是</td>
+              </tr>
+              <tr><td>题目数量</td><td>{{ paper.prolist }}</td></tr>
+              <tr><td>考生人数</td><td>{{ paper.stulist }}</td></tr>
+              <tr><td>交卷人数</td><td>{{ paper.submitted }}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 添加题目卡片 -->
+    <div class="col-lg-8 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">添加试题</h2>
+          <p class="card-description">填写以下表单添加新题目到本试卷中，批量导入请点击“批量导入”按钮</p>
+          <form class="forms-sample">
+            <div class="row">
+              <div class="col-md-12">
+              <div class="form-group row">
+                <label for="exampleInputUsername2" class="col-sm-1 col-form-label">题干</label>
+                <div class="col-sm-11"><input class="form-control" type="text" id="problem" v-model="newpro.problem" placeholder="输入题干" ></div>
+              </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label for="exampleInputUsername2" class="col-sm-3 col-form-label">题目类型</label>
+                  <div class="col-sm-9">
+                    <select v-model="newpro.ptype" name="type" class="form-control">
+                      <option value="">选择一个题目类型</option>
+                      <option value="keguan">客观题</option>
+                      <option value="zhuguan">主观题</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label for="exampleInputUsername2" class="col-sm-3 col-form-label">分值</label>
+                  <div class="col-sm-9">
+                    <input class="form-control" type="text" id="problem" v-model="newpro.point" placeholder="输入分值" >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label for="exampleInputUsername2" class="col-sm-3 col-form-label">参考答案</label>
+                  <div class="col-sm-9">
+                    <input class="form-control" type="text" id="problem" v-model="newpro.right" placeholder="参考答案" >
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label for="exampleInputUsername2" class="col-sm-3 col-form-label">干扰项一</label>
+                  <div class="col-sm-9">
+                    <input class="form-control" type="text" id="problem" v-model="newpro.wrong1" placeholder="干扰项一" >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label for="exampleInputUsername2" class="col-sm-3 col-form-label">干扰项二</label>
+                  <div class="col-sm-9">
+                    <input class="form-control" type="text" id="problem" v-model="newpro.wrong2" placeholder="干扰项二" >
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label for="exampleInputUsername2" class="col-sm-3 col-form-label">干扰项三</label>
+                  <div class="col-sm-9">
+                    <input class="form-control" type="text" id="problem" v-model="newpro.wrong3" placeholder="干扰项三" >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-gradient-success btn-md" @click="insert()"><i class="mdi mdi-note-plus"></i> 添加试题</button>
+            <button type="button" class="btn btn-gradient-warning btn-md" @click="reset()"><i class="mdi mdi-delete-variant"></i> 重填表单</button>
+            <button type="button" class="btn btn-gradient-info btn-md" onclick="show_div()"><i class="mdi mdi-playlist-plus"></i> 批量导入</button>
+
+          </form>
+        </div>  
+      </div>
+    </div>
+  </div>
+
+  <!-- 题目列表卡片 -->
+  <div class="card">
+  <div class="card-body">
+  <h2 class="card-title">题目列表</h2>
+  <!-- <p class="card-description">如需增加/删除试题，请使用试题管理</p> -->
+  <table class="table">
+    <thead>
+      <tr>
+        <th>编号</th>
+        <th>题干</th>
+        <th>类型</th>
+        <th>分值</th>
+        <th>参考答案</th>
+        <th>干扰项1</th>
+        <th>干扰项2</th>
+        <th>干扰项3</th>
+        <th>删除题目</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(pro, index) in prolist.question_list">
+        <td>{{ pro.id }}</td>
+        <td>{{ pro.problem }}</td>
+        <td v-if="pro.type == 'keguan'">客观题</td>
+        <td v-if="pro.type == 'zhuguan'">主观题</td>
+        <td>{{ pro.point }}</td>
+        <td>{{ pro.right }}</td>
+        <td>{{ pro.wrong1 }}</td>
+        <td>{{ pro.wrong2 }}</td>
+        <td>{{ pro.wrong3 }}</td>
+        <td><button type="button" v-on:click="remove(pro.id)" class="btn btn-gradient-danger btn-sm" /><i class="mdi mdi-delete"></i> 删除</button></td>
+      </tr>
+    </tbody>
+  </table>
+  <p><button type="button" class="btn btn-gradient-danger btn-block" @click="remove('all')"><i class="mdi mdi-delete-forever"></i> 清空所有题目</button></p>
+  </div>
+  </div>
+<!-- DIV of vue app -->
+</div>
+<script src="../../js/paper-problem.js"></script>
+</body>
+</html>

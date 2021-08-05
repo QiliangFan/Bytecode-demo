@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>考试中 - 学生</title>
+  <script src="../../js/jquery-3.3.1.min.js"></script>
+  <script src="../../js/vue.min.js"></script>
+  <script src="../../js/vue-resource.min.js"></script>
+  <script src="../../js/common.js"></script>
+  <script src="../../backend.js"></script>
+  <link rel="stylesheet" href="../../vendors/iconfonts/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/overdiv.css">
+  <link rel="shortcut icon" href="../../images/favicon.png" />
+</head>
+
+<body class="content-wrapper">
+<div class="float_top">
+  <button class="btn btn-inverse-info btn-sm" onclick="javascript:smoothscroll();"><i class="mdi mdi-format-vertical-align-top"></i> 返回顶部</button>
+</div>
+<div class="float_back">
+  <button class="btn btn-inverse-warning btn-sm" onclick="javascript:history.back(-1);"><i class="mdi mdi-arrow-left-bold-circle-outline"></i> 返回前页</button>
+</div>
+
+<div id="show_paper">
+  <div class="page-header">
+    <h1>考试列表</h1>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title">试卷信息</h2>
+      <table class="table table-striped">
+        <thead>
+          <th>项目</th>
+          <th>数据</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>试卷编号</td><td>{{ paper.pid }}</td>
+          </tr>
+          <tr>
+            <td>试卷名称</td><td>{{ paper.pname }}</td>
+          </tr>
+          <tr>
+            <td>出题老师</td><td>{{ paper.teaname }}</td>
+          </tr>
+          <tr>
+            <td>是否开放</td>
+            <td v-if="paper.penabled == 'no'">否</td><td v-if="paper.penabled == 'yes'">是</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <hr>
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title">试题内容</h2>
+      <p class="card-description">请在下方作答，作答完成后点击“提交答案”提交。考试结束前可反复提交，新的提交将覆盖原提交内容。</p>
+      <table class="table table-bordered">
+        <thead>
+          <th>题号（分值）</th>
+          <th colspan="4">题目内容/您的答案</th>
+        </thead>
+        <tbody>
+        <template v-for="(pro, index) in test.test_problem">
+          <tr>
+            <td colspan="1">{{ index + 1 }} ({{ pro.point }} 分)</td>
+            <td colspan="4">{{ pro.problem }}</td>
+          </tr>
+          <tr v-if="pro.type == 'keguan'">
+            <td colspan="1" width="12%">选择正确选项：</td>
+            <td width="22%">
+              <div class="form-check">
+                <label class="form-check-label">
+                  <input type="radio" class="form-check-input" v-bind:name="pro.id" v-bind:value="pro.option1" v-model="pro.answer">{{ pro.option1 }}
+                  <i class="input-helper"></i>
+                </label>
+              </div>
+            </td>
+            <td width="22%">
+              <div class="form-check">
+                <label class="form-check-label">
+                  <input type="radio" class="form-check-input" v-bind:name="pro.id" v-bind:value="pro.option2" v-model="pro.answer">{{ pro.option2 }}
+                  <i class="input-helper"></i>
+                </label>
+              </div>
+            </td>
+            <td width="22%">
+              <div class="form-check">
+                <label class="form-check-label">
+                  <input type="radio" class="form-check-input" v-bind:name="pro.id" v-bind:value="pro.option3" v-model="pro.answer">{{ pro.option3 }}
+                  <i class="input-helper"></i>
+                </label>
+              </div>
+            </td>
+            <td width="22%">
+              <div class="form-check">
+                <label class="form-check-label">
+                  <input type="radio" class="form-check-input" v-bind:name="pro.id" v-bind:value="pro.option4" v-model="pro.answer">{{ pro.option4 }}
+                  <i class="input-helper"></i>
+                </label>
+              </div>
+            </td>
+          </tr>
+          <tr v-if="pro.type == 'zhuguan'">
+            <td colspan="1">答案输入区域：</td>
+            <td colspan="4"><textarea class="form-control" v-model="pro.answer"></textarea></td>
+          </tr>
+        </template>
+        </tbody>
+      </table>
+      <hr>
+      <p style="text-align: center;" class="text-danger">
+        <br>请在提交前仔细检查您的答案！您只有一次提交答案的机会！<br><br>
+        <button type="button" class="btn btn-gradient-warning btn-md" v-on:click="submit_answer()" /><i class="mdi mdi-clipboard-check"></i> 提交答案</button>
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<script src="../../js/test-testing.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>在线考试系统 - 管理员</title>
+  <script src="../../js/jquery-3.3.1.min.js"></script>
+  <script src="../../js/vue.min.js"></script>
+  <script src="../../js/vue-resource.min.js"></script>
+  <script src="../../js/common.js"></script>
+  <script src="../../backend.js"></script>
+  <link rel="stylesheet" href="../../vendors/iconfonts/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/overdiv.css">
+  <link rel="shortcut icon" href="../../images/favicon.png" />
+</head>
+
+<body class="content-wrapper">
+<div class="float_top">
+  <button class="btn btn-inverse-info btn-sm" onclick="javascript:smoothscroll();"><i class="mdi mdi-format-vertical-align-top"></i> 返回顶部</button>
+</div>
+
+<div id="usermanage">
+  <div class="page-header">
+    <h1>用户列表</h1>
+  </div>
+
+  <div class="card">
+  <div class="card-body">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>用户名</th>
+        <th>密码</th>
+        <th>用户类型</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for ="(user,index) in userlist">
+        <td>{{ user.username }}</td>
+        <td>{{ user.password }}</td>
+        <td v-if="user.usertype == 'student'"><label class="badge badge-info">学生用户</label></td>
+        <td v-if="user.usertype == 'teacher'"><label class="badge badge-success">教师用户</label></td>
+        <td v-if="user.usertype == 'admin'"><label class="badge badge-warning">管理员</label></td>
+        <!-- <td>{{ user.usertype }}</td> -->
+        <td><button type="button" class="btn btn-gradient-danger btn-sm" v-if="user.usertype != 'admin'" v-on:click="remove(user.username)" /><i class="mdi mdi-account-minus"></i> 删除</button></td>
+      </tr>
+      <tr>
+        <td><input type="text" id="name" v-model="postdata.username" class="form-control" placeholder="待添加账户的账号..." /></td>
+        <td><input type="text" id="age"v-model="postdata.password" class="form-control" placeholder="待添加账户的密码..."/></td>
+        <td>
+          <select v-model="postdata.usertype" name="usertype" class="form-control">
+            <option value="">选择一个类别</option>
+            <option value="student">学生用户</option>
+            <option value="teacher">教师用户</option>
+          </select>
+        </td>
+        <td><button type="button" class="btn btn-gradient-success btn-sm" @click="insert" /><i class="mdi mdi-account-plus"></i> 添加</button></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="../../js/admin-userlist.js"></script>
+
+</body>
+</html>

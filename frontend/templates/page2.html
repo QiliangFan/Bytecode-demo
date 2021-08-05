@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>网络技术组-成果展示</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <!-- Bootstrap CSS-->
+  <link rel="stylesheet" href="../static/vendor/bootstrap/css/bootstrap.min.css">
+  <!-- Font Awesome CSS-->
+  <link rel="stylesheet" href="../static/vendor/font-awesome/css/font-awesome.min.css">
+  <!-- Fontastic Custom icon font-->
+  <link rel="stylesheet" href="../static/css/fontastic.css">
+  <!-- Google fonts - Roboto -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+  <!-- jQuery Circle-->
+  <link rel="stylesheet" href="../static/css/grasp_mobile_progress_circle-1.0.0.min.css">
+  <!-- Custom Scrollbar-->
+  <link rel="stylesheet" href="../static/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css">
+  <!-- theme stylesheet-->
+  <link rel="stylesheet" href="../static/css/style.default.css" id="theme-stylesheet">
+  <!-- Custom stylesheet - for your changes-->
+  <link rel="stylesheet" href="../static/css/custom.css">
+  <!-- Favicon-->
+  <link rel="shortcut icon" href="../static/img/favicon.ico">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <!-- Tweaks for older IEs-->
+  <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+        <style type="text/css">
+            #mynetwork {
+                width: 1000px;
+                height: 700px;
+                border: 1px solid lightgray;
+            }
+            *{padding: 0;margin: 0;}
+            .menu ul{list-style: none}
+            .menu ul li{
+                padding: 5px 5px;
+                color: #659bc5;
+                border-bottom: 1px solid #ffffff;
+                font-size: 14px;
+                cursor: pointer;
+                list-style: none;
+            }
+            .menu ul li:hover{
+                color: #659bc5;
+            }
+            .menu ul li:last-child{
+                border-bottom: none;
+                padding: 5px 5px 5px 5px;
+            }
+        </style>
+</head>
+
+<body>
+  <!-- Side Navbar -->
+  <nav class="side-navbar">
+    <div class="side-navbar-wrapper">
+      <!-- Sidebar Header    -->
+      <div class="sidenav-header d-flex align-items-center justify-content-center">
+        <!-- User Info-->
+        <div class="sidenav-header-inner text-center">
+          <img src="../static/img/logo.jpeg" alt="person" class="img-fluid rounded-circle">
+          <h2 class="h5">网络技术</h2>
+          <h2 class="h5">项目demo</h2>
+          
+        </div>
+        <!-- Small Brand information, appears on minimized sidebar-->
+        <div class="sidenav-header-logo">
+          <a href="page1.html" class="brand-small text-center">
+            <strong>返回</strong>
+          </a>
+        </div>
+      </div>
+      <!-- Sidebar Navigation Menus-->
+      <div class="main-menu">
+        <h5 class="sidenav-heading">导航</h5>
+        <ul id="side-main-menu" class="side-menu list-unstyled">
+          <li><a href="page1.html"> <i class="icon-grid"></i>DC间拓扑展示 </a></li>
+          <li><a href="page2.html"> <i class="icon-list"></i>DC内拓扑展示</a></li>
+          <li><a href="page3.html"> <i class="fa fa-bar-chart"></i>流量分析</a></li>
+          <li>
+            <a href="#">
+              <i class="icon-mail"></i>
+              更多...
+              <div class="badge badge-warning">New</div>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主体 -->
+  <div class="page">
+    <!-- navbar-->
+    <header class="header">
+      <nav class="navbar">
+        <div class="container-fluid">
+          <div class="navbar-holder d-flex align-items-center justify-content-between">
+            <div class="navbar-header"><a id="toggle-btn" href="#" class="menu-btn"><i class="icon-bars">
+                </i></a><a href="test.html" class="navbar-brand">
+                <div class="brand-text d-none d-md-inline-block">
+                  <strong class="text-primary">大规模网络拓扑自动可视化</strong>
+                </div>
+              </a></div>
+            <ul class="nav-menu list-unstyled d-flex flex-md-row align-items-md-center">
+              <!-- Notifications dropdown-->
+              <!-- Messages dropdown-->
+              <!-- Languages dropdown    -->
+              <li class="nav-item dropdown"><a id="languages" rel="nofollow" data-target="#" href="#"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                  class="nav-link language dropdown-toggle"><img src="../static/img/flags/16/CN.png" alt="Chinese"><span
+                    class="d-none d-sm-inline-block">中文</span></a>
+                <ul aria-labelledby="languages" class="dropdown-menu">
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <!-- 页面显示部分 -->
+    <div id="container" style="height: 700px;width: 1200px;"></div>
+
+    <!--节点悬停-->
+    <!--<ul></ul>-->
+    </div>
+    
+    <!-- 页面显示部分 -->
+    <footer class="main-footer">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-6">
+            <p>Byte Camp 2021</p>
+          </div>
+          <div class="col-sm-6 text-right">
+            HomePage <a href="https://bytecamp.toutiao.com/" target="_blank" title="联系我们">联系我们</a> - Coding from
+            <a href="https://github.com/QiliangFan/Bytecode-demo" title="GitHub"
+              target="_blank">GitHub</a>
+
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <!-- JavaScript files-->
+  <script src="../static/vendor/jquery/jquery.min.js"></script>
+  <script src="../static/vendor/popper.js/umd/popper.min.js"> </script>
+  <script src="../static/vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="../static/js/grasp_mobile_progress_circle-1.0.0.min.js"></script>
+  <script src="../static/vendor/jquery.cookie/jquery.cookie.js"> </script>
+  <script src="../static/vendor/chart.js/Chart.min.js"></script>
+  <script src="../static/vendor/jquery-validation/jquery.validate.min.js"></script>
+  <script src="../static/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+  <script src="../static/js/charts-home.js"></script>
+  <script src="../static/js/vis-network.min.js"></script>
+  <!-- Main File-->
+  <script src="../static/js/front.js"></script>
+  <script src="../static/javascript/page2.js"></script>
+</body>
+
+</html>
