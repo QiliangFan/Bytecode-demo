@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>在线考试系统 - 教师用户</title>
+  <script src="../../js/jquery-3.3.1.min.js"></script>
+  <script src="../../js/vue.min.js"></script>
+  <script src="../../js/vue-resource.min.js"></script>
+  <script src="../../js/common.js"></script>
+  <script src="../../backend.js"></script>
+  <link rel="stylesheet" href="../../vendors/iconfonts/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/overdiv.css">
+  <link rel="shortcut icon" href="../../images/favicon.png" />
+</head>
+
+<body class="content-wrapper">
+<div class="float_top">
+  <button class="btn btn-inverse-info btn-sm" onclick="javascript:smoothscroll();"><i class="mdi mdi-format-vertical-align-top"></i> 返回顶部</button>
+</div>
+
+<div id="app">
+  <div class="page-header">
+    <h1>试卷列表</h1>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h3 class="card-title">试卷列表</h3>
+      <p class="card-description">增删准考学生请进入“试卷详情”；增删试题请进入“试题管理”</p>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>试卷编号</th>
+            <th>试卷名称</th>
+            <th>是否开放</th>
+            <th>创建老师</th>
+            <th>题目数量</th>
+            <th>准考人数</th>
+            <th>交卷人数</th>
+            <th>开关试卷</th>
+            <th v-if="!judge_mode">删除试卷</th>
+            <th v-if="!judge_mode">查看试卷</th>
+            <th v-if="!judge_mode">试题管理</th>
+            <th v-if="judge_mode">进入判题</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for ="(paper,index) in paperlist">
+            <td>{{ paper.pid }}</td>
+            <td>{{ paper.pname }}</td>
+            <td v-if="paper.penabled == 'no'"><label class="badge badge-danger">否</label></td>
+            <td v-if="paper.penabled == 'yes'"><label class="badge badge-success">是</label></td>
+            <td>{{ paper.teaname }}</td>
+            <td>{{ paper.prolist }}</td>
+            <td>{{ paper.stulist }}</td>
+            <td>{{ paper.submitted }}</td>
+            <td>
+              <button type="button" v-if="paper.penabled == 'no'" class="btn btn-gradient-primary btn-sm" @click="control('enable', paper.pid)"><i class="mdi mdi-book-open-variant"></i> 开放答题</button>
+              <button type="button" v-if="paper.penabled == 'yes'" class="btn btn-gradient-light btn-sm" @click="control('disable', paper.pid)"><i class="mdi mdi-close-box-outline"></i> 关闭答题</button>
+            </td>
+            <td v-if="!judge_mode">
+              <button type="button" v-on:click="remove(paper.pid)" class="btn btn-gradient-danger btn-sm" v-if="paper.submitted == 0"><i class="mdi mdi-delete-forever"></i> 删除试卷</button>
+              <div v-if="paper.submitted > 0">本试题有提交记<br>录，不允许删除</div>
+            </td>
+            <td v-if="!judge_mode">
+              <button type="button" v-on:click="detail(paper.pid)" class="btn btn-gradient-info btn-sm"><i class="mdi mdi-information-outline"></i> 查看详情</button>
+            </td>
+            <td v-if="!judge_mode">
+              <button type="button" v-on:click="problem(paper.pid)" class="btn btn-gradient-success btn-sm"><i class="mdi mdi-format-list-numbers"></i> 试题管理</button>
+            </td>
+            <td v-if="judge_mode">
+              <button type="button" v-on:click="judge(paper.pid)" class="btn btn-gradient-info btn-sm"><i class="mdi mdi-comment-text-outline"></i> 进入判题</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="../../js/paper-manage.js"></script>
+</body>
+
+</html>

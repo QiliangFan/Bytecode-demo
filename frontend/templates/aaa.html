@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>vis.js</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script type="text/javascript" src="../static/js/jquery.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <!--<script type="text/javascript" src="js/vis-network.min.js"></script>-->
+    <style type="text/css">
+        #mynetwork {
+            width: 600px;
+            height: 600px;
+            border: 1px solid lightgray;
+        }
+        *{padding: 0;margin: 0;}
+        .menu{
+            /*这个样式不写，右键弹框会一直显示在画布的左下角*/
+            position: absolute;
+            background: rgba(3,3,3,0.6);
+            border-radius: 5px;
+            left: -99999px;
+            top: -999999px;
+        }
+        .menu ul{list-style: none}
+        .menu ul li{
+            padding: 5px 10px;
+            color: #ffff;
+            border-bottom: 1px solid #ffffff;
+            font-size: 14px;
+            cursor: pointer;
+            list-style: none;
+        }
+        .menu ul li:hover{
+            color: #659bc5;
+        }
+        .menu ul li:last-child{
+            border-bottom: none;
+            padding: 5px 10px 0 10px;
+        }
+    </style>
+</head>
+<body>
+<div id="mynetwork"></div>
+<!--菜单操作-->
+<div id="menuOperation" class="menu" style="display: none;">
+    <ul>
+        <li><span class="glyphicon glyphicon-off" aria-hidden="true"></span> 下线</li>
+        <li><span class="glyphicon glyphicon-road" aria-hidden="true"></span> 通行</li>
+    </ul>
+</div>
+<!--节点悬停-->
+<div class="menu" id="divHoverNode" style="display: none;">
+    <!--<ul></ul>-->
+</div>
+<script type="text/javascript">
+    // 创建节点数据数组
+    var nodes = [
+        {
+            "id": 0,
+            "name": "外部网络",
+            "type": "Internet",
+            "ip":"1.1.1.1",
+            "port":"未知",
+            "ignore":"false",
+            "flag":"true"
+        }, {
+            "id": 1,
+            "name": "交换机",
+            "type": "switch",
+            "ip":"192.168.30.125",
+            "mac":"48:de:3d:e2:49:a8",
+            "model":"H3C",
+            "uptime":"2020-09-03 10:50:50",
+            "port":"22",
+            "ignore":"true",
+            "flag":"true"
+        }, {
+            "id": 2,
+            "name": "交换机",
+            "type": "switch",
+            "ip":"192.168.1.8",
+            "mac":"cd:bd:3d:e2:55:55",
+            "model":"pf",
+            "uptime":"2020-09-03 10:50:50",
+            "port":"33",
+            "ignore":"true",
+            "flag":"true"
+        }, {
+            "id": 3,
+            "name": "计算机",
+            "type": "computer",
+            "ip":"192.168.1.8",
+            "mac":"dv:bd:fd:e2:df:fd",
+            "model":"pf",
+            "uptime":"2020-09-03 10:50:50",
+            "account":"xiaox",
+            "location":"xianm",
+            "port":"44",
+            "ignore":"true",
+            "flag":"true"
+        }, {
+            "id": 4,
+            "name": "路由器",
+            "type": "rooter",
+            "ip":"192.168.1.8",
+            "mac":"ds:bd:3d:e2:ds:55",
+            "model":"pf",
+            "uptime":"2020-09-03 10:50:50",
+            "account":"xiaox",
+            "location":"xianm",
+            "port":"55",
+            "ignore":"true",
+            "flag":"true"
+        }, {
+            "id": 5,
+            "name": "服务器",
+            "type": "service",
+            "ip":"192.168.1.8",
+            "mac":"vf:eq:dd:e2:55:55",
+            "model":"pf",
+            "uptime":"2020-09-03 10:50:50",
+            "account":"xiaox",
+            "location":"xianm",
+            "port":"66",
+            "ignore":"true",
+            "flag":"true"
+        }, {
+            "id":6,
+            "name": "打印机",
+            "type": "print",
+            "ip":"192.168.1.8",
+            "mac":"ss:bd:3d:ju:55:55",
+            "model":"pf",
+            "uptime":"2020-09-03 10:50:50",
+            "account":"xiaox",
+            "location":"xianm",
+            "port":"77",
+            "ignore":"true",
+            "flag":"true"
+        }, {
+            "id": 7,
+            "name": "手机",
+            "type": "phone",
+            "ip":"192.168.1.8",
+            "mac":"ju:ju:3d:e2:55:uy",
+            "model":"pf",
+            "uptime":"2020-09-03 10:50:50",
+            "account":"xiaox",
+            "location":"xianm",
+            "port":"88",
+            "ignore":"true",
+            "flag":"true"
+        }
+    ];
+    // 创建边数据数组
+    var edges = [
+        { from: 0, to: 1,id:"0>1" },
+        { from: 1, to: 2,id:"1>2" },
+        { from: 1, to: 3,id:"1>3" },
+        { from: 1, to: 4,id:"1>4" },
+        { from: 1, to: 5,id:"1>5" },
+        { from: 2, to: 6,id:"2>6" },
+        { from: 2, to: 7,id:"2>7" }
+    ];
+    /**
+     * 自定义图片
+     */
+    // 获取容器
+    var container = document.getElementById('mynetwork');
+    // 将数据赋值给vis 数据格式化器
+    var data = {
+        nodes: nodes,
+        edges: edges
+    };
+    console.log('nodes',data.nodes);
+    var options = {
+        nodes:{
+            shape: 'dot'//设置图片
+            // image:"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1599645215703&di=0cb23e74736a6a1222f35b822f5bf833&imgtype=0&src=http%3A%2F%2Fa1.att.hudong.com%2F05%2F00%2F01300000194285122188000535877.jpg"
+        },
+        interaction:{
+            hover:true,
+            hoverConnectedEdges: true,
+            tooltipDelay: 300,
+        }
+    };
+    // 初始化关系图
+    var network = new vis.Network(container, data, options);
+    /**
+     * 节点鼠标悬停（点击）获取到的信息
+     * 因为hoverNode事件官方文档中给的信息悬停时只传了id值，想在鼠标悬停的时候显示该节点的信息拿不到值，所以遍历节点，相等的时候return改节点的信息
+     * @param option-----鼠标悬停时取得的id
+     * @returns {{flag, port, ip, name, ignore, id, type}|{flag, port, ip, name, ignore, model, id, type, mac, uptime}|{flag, port, ip, name, ignore, model, location, id, type, mac, account, uptime}|*}
+     */
+    function getNode(option) {
+        for (var i = 0;i < nodes.length;i++){
+            if (option == nodes[i].id){
+                // console.log('i',nodes[i]);
+                return nodes[i];
+            }
+        }
+    }
+    /**
+     * 线悬停（点击）时两端节点的信息（与节点类似）
+     * edges中加了id属性，代表线条指向，悬停时通过edges--id与nodes--id对比，将两端节点信息拼凑出来
+     * @param option----鼠标悬停在线上时取得的id
+     * @returns {Array}
+     */
+    function getEdge(option){
+        var linkId = option;
+        var linkIdFirst = linkId.substring(0,1);//截取第一位
+        var linkIdLast = linkId.substring(linkId.length-1,linkId.length);//截取最后一位
+        var dataList = [];//存放线条两边的节点nodes数据
+        for (var j =0;j<nodes.length;j++){
+            if (linkIdFirst == nodes[j].id || linkIdLast == nodes[j].id){
+                dataList.push(nodes[j]);
+            }
+        }
+        return dataList;
+    }
+    //todo  悬停在节点上--显示弹框
+    network.on('hoverNode',function(properties){
+        // console.log('悬停节点',properties);
+        var hoveNodeList = getNode(properties.node);
+        // console.log('hoveNodeList',hoveNodeList);
+        var deviceType = hoveNodeList.type;
+        var imgPathSrc = hoveNodeList.image;
+        if (deviceType == "Internet" || deviceType == "hub"){
+            var $ul = "<ul>"
+                +"<li><img src=' "+imgPathSrc+" ' width='30px' height='25px'><span> "+hoveNodeList.name+" </span> </li>"
+                +"</ul>";
+            $("#divHoverNode").append($ul);
+        }
+        else if (deviceType == "switch"){
+            var $ul = "<ul>"
+                +"<li><img src=' "+imgPathSrc+" ' width='30px' height='25px'><span> 设备类型： "+hoveNodeList.name+" </span> </li>"
+                +"<li>IP："+ hoveNodeList.ip+"</li>"
+                +"<li>MAC："+ hoveNodeList.mac+"</li>"
+                +"<li>设备型号："+ hoveNodeList.model+"</li>"
+                +"</ul>";
+            $("#divHoverNode").append($ul);
+        }else{
+            var $ul = "<ul>"
+                +"<li><img src=' "+imgPathSrc+" ' width='30px' height='25px'><span> 设备类型："+hoveNodeList.name+" </span> </li>"
+                +"<li>IP："+ hoveNodeList.ip+"</li>"
+                +"<li>MAC："+ hoveNodeList.mac+"</li>"
+                +"<li>账号："+ hoveNodeList.account+"</li>"
+                +"<li>所在位置："+ hoveNodeList.location+"</li>"
+                +"<li>最后登录时间："+ hoveNodeList.uptime+"</li>"
+                +"</ul>";
+            $("#divHoverNode").append($ul);
+        }
+        $('#divHoverNode').css({
+            'display': 'block',
+            'left': properties.event.offsetX + 15,
+            'top' : properties.event.offsetY + 15
+        });
+        $('#menuOperation').hide();
+    });
+    //todo  从节点移开---隐藏弹框
+    network.on('blurNode',function(){
+        $("#divHoverNode").hide();
+        $("#divHoverNode").empty();//移除之后清空div
+    });
+    //todo  悬停在边上--显示弹框
+    network.on('hoverEdge',function(properties){
+        // console.log('悬停边',properties);
+        var hoveEdgeList = getEdge(properties.edge);
+        // console.log('hoveEdgeList',hoveEdgeList);
+        var $ul = "<ul>"
+            +"<li>名称："+ hoveEdgeList[0].name+"->"+hoveEdgeList[1].name+"</li>"
+            +"<li>端口号："+ hoveEdgeList[0].ip+"->"+hoveEdgeList[1].ip+"</li>"
+            +"</ul>";
+        $("#divHoverNode").append($ul);
+        $('#divHoverNode').css({
+            'display': 'block',
+            'left': properties.event.offsetX + 15,
+            'top' : properties.event.offsetY + 15
+        });
+        $('#menuOperation').hide();
+    });
+    //todo  从边上移开---隐藏弹框
+    network.on('blurEdge',function(properties){
+        $("#divHoverNode").hide();
+        $("#divHoverNode").empty();//移除之后清空div
+    });
+    //todo  点击的判断是否选中节点时候显示隐藏
+    network.on('click',function(properties){
+        var clickNodeList = getNode(properties.nodes[0]);
+        // console.log('clickNodeList',clickNodeList);
+        if (typeof(clickNodeList) == "undefined") {
+            $('#menuOperation').hide();
+        }else{
+            $('#menuOperation').css({
+                'display': 'block',
+                'left': properties.event.center.x + 15,
+                'top' : properties.event.center.y + 15
+            });
+            $("#divHoverNode").hide();
+        }
+    });
+</script>
+</body>

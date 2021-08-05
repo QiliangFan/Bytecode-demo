@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>提交答案列表 - 教师</title>
+  <script src="../../js/jquery-3.3.1.min.js"></script>
+  <script src="../../js/vue.min.js"></script>
+  <script src="../../js/vue-resource.min.js"></script>
+  <script src="../../js/common.js"></script>
+  <script src="../../backend.js"></script>
+  <link rel="stylesheet" href="../../vendors/iconfonts/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/overdiv.css">
+  <link rel="shortcut icon" href="../../images/favicon.png" />
+</head>
+
+<body class="content-wrapper">
+<div class="float_top">
+  <button class="btn btn-inverse-info btn-sm" onclick="javascript:smoothscroll();"><i class="mdi mdi-format-vertical-align-top"></i> 返回顶部</button>
+</div>
+<div class="float_back">
+  <button class="btn btn-inverse-warning btn-sm" onclick="javascript:history.back(-1);"><i class="mdi mdi-arrow-left-bold-circle-outline"></i> 返回前页</button>
+  <br>
+  <button class="btn btn-inverse-dark btn-sm" onclick="javascript:window.location.href='paper-manage.html?mode=judge'"><i class="mdi mdi-arrow-left-bold-circle-outline"></i> 返回列表</button>
+</div>
+
+<div id="app">
+  <div class="page-header">
+  <h1>判题系统</h1>
+  </div>
+
+  <!-- 查看提交答案弹窗 -->
+  <div id="overdiv" class="card">
+    <div class="card-body">
+      <h2 class="card-title">学生 {{ stuid_to_show }} 提交的答案</h2>
+      <!-- <p class="card-description">请在下方文本框中一行输入一个学生学号</p> -->
+      <p>
+        <div style="overflow-y:scroll; height: 240px;">
+        <table class="table table-striped table-scroll">
+          <thead>
+            <th>题目编号</th>
+            <th>题目类型</th>
+            <th>题目分值</th>
+            <th>学生答案</th>
+          </thead>
+          <tbody id="show_record">
+          </tbody>
+        </table>
+        </div>
+      </p>
+      <button type="button" class="btn btn-light btn-fw" onclick="javascript:hide_div()" /><i class="mdi mdi-window-close"></i> 关闭本窗口</button>
+      <div></div>
+    </div>
+  </div>
+  <div id="over"></div>
+
+  <div class="row">
+    <div class="col-lg-4 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">基本信息</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>项目</th><th>数据</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>试卷编号</td><td>{{ paper.pid }}</td></tr>
+              <tr><td>试卷名称</td><td>{{ paper.pname }}</td></tr>
+              <tr><td>出题老师</td><td>{{ paper.teaname }}</td></tr>
+              <tr>
+                <td>是否开放</td>
+                <td v-if="paper.penabled == 'no'">否</td>
+                <td v-if="paper.penabled == 'yes'">是</td>
+              </tr>
+              <tr><td>题目数量</td><td>{{ paper.prolist }}</td></tr>
+              <tr><td>考生人数</td><td>{{ paper.stulist }}</td></tr>
+              <tr><td>交卷人数</td><td>{{ paper.submitted }}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">判题操作</h2>
+          <table class="table">
+            <thead>
+              <th>操作</th>
+              <th>说明</th>
+            </thead>
+            <tbody>
+              <tr>
+                <td><button class="btn btn-gradient-success btn-block" @click="judge_keguan()"> 自动判定客观题</button></td>
+                <td>由判题系统自动对当前所有提交的答案中客观题部分进行判定</td>
+              </tr>
+              <tr>
+                <td><button class="btn btn-gradient-success btn-block" @click="start_zhuguan()"> 开始主观题判定</button></td>
+                <td>从提交列表中自动选择未判主观题的提交继续判题</td>
+              </tr>
+              <tr>
+                <td><button class="btn btn-gradient-warning btn-block" @click="clean_keguan()"> 清除客观题判定</button></td>
+                <td>清除当前所有客观题判定结果</td>
+              </tr>
+              <tr>
+                <td><button class="btn btn-gradient-danger btn-block" @click="clean_zhuguan()"> 清除主观题判定</button></td>
+                <td>清除当前所有主观题判定结果（<label class="badge bg-warning">该操作不可逆，请谨慎操作</label>）</td>
+              </tr>
+              <tr>
+                <td><button class="btn btn-gradient-info btn-block" @click="submit_grade()"> 提交成绩</button></td>
+                <td>以当前状态提交列表中的学生成绩（<label class="badge bg-warning">提交后，该学生判题情况将不能修改</label>）</td>
+              </tr>
+            </tbody>
+          </table> 
+          <p>
+            <!--<button type="button" class="btn btn-gradient-danger btn-block" @click="delete_all_names" /><i class="mdi mdi-delete-forever"></i> 清空准考学生列表</button>
+            <button type="button" class="btn btn-gradient-info btn-block" onclick="show_div()" /><i class="mdi mdi-account-multiple-plus"></i> 批量导入学生</button>-->
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title">提交列表</h2>
+      <p class="card-description">本试卷所有已提交答案的学生列表；修改已判定的主观题分数可进入相应学生“判主观题”页面修改并重新提交</p>
+      <table class="table">
+        <thead>
+          <th>试卷编号</th>
+          <th>学生姓名</th>
+          <th>提交时间</th>
+          <th>是否提交</th>
+          <th>客观题得分</th>
+          <th>主观题得分</th>
+          <th>当前总分</th>
+          <th>答案内容</th>
+          <th>判主观题</th>
+          <th>记录操作</th>
+        </thead>
+        <tbody>
+          <tr v-for="(ans, index) in anslist">
+            <td>{{ ans.paperid }}</td>
+            <td>{{ ans.stuid }}</td>
+            <td>{{ ans.submit_time }}</td>
+            <td v-if="ans.confirmed == 'no'"><label class="badge bg-warning">未提交</label></td>
+            <td v-if="ans.confirmed == 'yes'"><label class="badge bg-success">已提交</label></td>
+            <td v-if="ans.keguan_grade == -1"><label class="badge bg-warning">未判题</label></td>
+            <td v-if="ans.keguan_grade != -1">{{ ans.keguan_grade }}</td>
+            <td v-if="ans.zhuguan_grade == -1"><label class="badge bg-warning">未判题</label></td>
+            <td v-if="ans.zhuguan_grade != -1">{{ ans.zhuguan_grade }}</td>
+            <td>{{ (ans.keguan_grade == -1 ? 0 : ans.keguan_grade) + (ans.zhuguan_grade == -1 ? 0 : ans.zhuguan_grade) }}
+            </td>
+            <td><button type="button" class="btn btn-gradient-info btn-sm" @click="showans(ans.stuid, ans.answers)"><i class="mdi mdi-information-outline"></i> 查看记录</button></td>
+            <td><button type="button" class="btn btn-gradient-light btn-sm" @click="judge_zhuguan(ans.stuid, paper.pid)"><i class="mdi mdi-comment-check-outline"></i> 判主观题</button></td>
+            <td v-if="ans.confirmed == 'no'"><button type="button" class="btn btn-gradient-danger btn-sm" @click="delans(ans.stuid)"><i class="mdi mdi-delete"></i> 删除记录</button></td>
+            <td v-if="ans.confirmed == 'yes'">不可删除已提交记录</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="../../js/paper-answers.js"></script>
+
+</body>
+</html>

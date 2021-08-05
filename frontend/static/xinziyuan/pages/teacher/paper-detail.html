@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>在线考试系统 - 试题详情</title>
+  <script src="../../js/jquery-3.3.1.min.js"></script>
+  <script src="../../js/vue.min.js"></script>
+  <script src="../../js/vue-resource.min.js"></script>
+  <script src="../../js/common.js"></script>
+  <script src="../../backend.js"></script>
+  <link rel="stylesheet" href="../../vendors/iconfonts/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/overdiv.css">
+  <link rel="shortcut icon" href="../../images/favicon.png" />
+</head>
+
+<body class="content-wrapper">
+<div class="float_top">
+  <button class="btn btn-inverse-info btn-sm" onclick="javascript:smoothscroll();"><i class="mdi mdi-format-vertical-align-top"></i> 返回顶部</button>
+</div>
+<div class="float_back">
+  <button class="btn btn-inverse-warning btn-sm" onclick="javascript:history.back(-1);"><i class="mdi mdi-arrow-left-bold-circle-outline"></i> 返回前页</button>
+</div>
+
+<div id="app">
+  <!-- 批量添加学生弹窗 -->
+  <div id="overdiv" class="card">
+    <div class="card-body">
+      <h2 class="card-title">批量导入学生</h2>
+      <p class="card-description">请在下方文本框中一行输入一个学生学号</p>
+      <form>
+        <textarea rows="10" cols="50" id="batch_names" class="form-control" v-model="batch_names" placeholder="一行一个学生..."></textarea><br>
+        <button type="button" class="btn btn-success btn-fw" @click="batch_insert" /><i class="mdi mdi-account-multiple-plus"></i> 批量添加</button>
+        <button type="reset" class="btn btn-warning btn-fw" /><i class="mdi mdi-delete-variant"></i> 清空输入框</button>
+        <button type="button" class="btn btn-light btn-fw" onclick="javascript:hide_div()" /><i class="mdi mdi-window-close"></i> 取消</button>
+      </form>
+      <div></div>
+    </div>
+  </div>
+  <div id="over"></div>
+
+  <div class="page-header">
+  <h1>试卷详情</h1>
+  </div>
+  <div class="row">
+    <div class="col-lg-4 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">基本信息</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>项目</th><th>数据</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>试卷编号</td><td>{{ paper.pid }}</td></tr>
+              <tr><td>试卷名称</td><td>{{ paper.pname }}</td></tr>
+              <tr><td>出题老师</td><td>{{ paper.teaname }}</td></tr>
+              <tr>
+                <td>是否开放</td>
+                <td v-if="paper.penabled == 'no'">否</td><td v-if="paper.penabled == 'yes'">是</td>
+              </tr>
+              <tr><td>题目数量</td><td>{{ paper.prolist }}</td></tr>
+              <tr><td>考生人数</td><td>{{ paper.stulist }}</td></tr>
+              <tr><td>交卷人数</td><td>{{ paper.submitted }}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">准考学生列表</h2>
+          <p class="card-description">点击可删除单个学生</p>
+          <table class="table">
+            <tbody id="stutable"></tbody>
+          </table>
+          <p>
+            <button type="button" class="btn btn-gradient-danger btn-block" @click="delete_all_names" /><i class="mdi mdi-delete-forever"></i> 清空准考学生列表</button>
+            <button type="button" class="btn btn-gradient-info btn-block" onclick="show_div()" /><i class="mdi mdi-account-multiple-plus"></i> 批量导入学生</button>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+  <div class="card-body">
+  <h2 class="card-title">题目列表</h2>
+  <p class="card-description">如需增加/删除试题，请使用试题管理</p>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>编号</th>
+        <th>题干</th>
+        <th>类型</th>
+        <th>分值</th>
+        <th>参考答案</th>
+        <th>干扰项1</th>
+        <th>干扰项2</th>
+        <th>干扰项3</th>
+        <!-- <th>操作</th> -->
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for ="(pro, index) in prolist.question_list">
+        <td>{{ pro.id }}</td>
+        <td>{{ pro.problem }}</td>
+        <td v-if="pro.type == 'keguan'">客观题</td>
+        <td v-if="pro.type == 'zhuguan'">主观题</td>
+        <td>{{ pro.point }}</td>
+        <td>{{ pro.right }}</td>
+        <td>{{ pro.wrong1 }}</td>
+        <td>{{ pro.wrong2 }}</td>
+        <td>{{ pro.wrong3 }}</td>
+        <!--<td><input type="button" v-on:click="remove(pro.id)" value="删除" />
+           <input type="button" v-on:click="modify(paper.pid)" value="修改" /> --></td>
+      </tr>
+      <!-- <tr>
+        <td>(#)</td>
+        <td><input type="text" id="problem" v-model="newpro.problem" placeholder="输入题干"/></td>
+        <td>
+          <select v-model="newpro.ptype" name="type">
+            <option value="">选择一个类别</option>
+            <option value="keguan">客观题</option>
+            <option value="zhuguan">主观题</option>
+          </select>
+        </td>
+        <td><input type="text" id="problem" v-model="newpro.point" style="width: 20px" /></td>
+        <td><input type="text" id="problem" v-model="newpro.right" style="width: 50px" /></td>
+        <td><input type="text" id="problem" v-model="newpro.wrong1" style="width: 50px" /></td>
+        <td><input type="text" id="problem" v-model="newpro.wrong2" style="width: 50px" /></td>
+        <td><input type="text" id="problem" v-model="newpro.wrong3" style="width: 50px" /></td>
+        <td><input type="button" @click="insert" value="添加" /></td>
+      </tr> -->
+    </tbody>
+   </table>
+  </div>
+  </div>
+<!-- DIV of vue app -->
+</div>
+<script src="../../js/paper-detail.js"></script>
+</body>
+</html>

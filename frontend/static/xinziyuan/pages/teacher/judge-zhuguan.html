@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>主观题判分 - 教师</title>
+  <script src="../../js/jquery-3.3.1.min.js"></script>
+  <script src="../../js/vue.min.js"></script>
+  <script src="../../js/vue-resource.min.js"></script>
+  <script src="../../js/common.js"></script>
+  <script src="../../backend.js"></script>
+  <link rel="stylesheet" href="../../vendors/iconfonts/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/overdiv.css">
+  <link rel="shortcut icon" href="../../images/favicon.png" />
+</head>
+
+<body class="content-wrapper">
+  <div id="app">
+  <div class="float_top">
+    <button class="btn btn-inverse-info btn-sm" onclick="javascript:smoothscroll();"><i class="mdi mdi-format-vertical-align-top"></i> 返回顶部</button>
+  </div>
+  <div class="float_back">
+    <button class="btn btn-inverse-warning btn-sm" onclick="javascript:history.back(-1);"><i class="mdi mdi-arrow-left-bold-circle-outline"></i> 返回前页</button><br>
+    <button class="btn btn-inverse-dark btn-sm" @click="back_to_list()"><i class="mdi mdi-arrow-left-bold-circle-outline"></i> 返回列表</button>
+  </div>
+
+  <div class="page-header">
+  <h1>主观题判题</h1>
+  </div>
+
+  <!-- 查看提交答案弹窗 -->
+  <div id="overdiv" class="card">
+    <div class="card-body">
+      <h2 class="card-title">查看题目</h2>
+      <!-- <p class="card-description">请在下方文本框中一行输入一个学生学号</p> -->
+      <p>
+        <table class="table table-bordered">
+          <thead>
+            <th>题目</th>
+            <th>参考答案</th>
+          </thead>
+          <tr>
+            <td>{{ question_to_show }}</td>
+            <td>{{ answer_to_show }}</td>
+          </tr>
+        </table>
+      </p>
+      <button type="button" class="btn btn-light btn-fw" onclick="javascript:hide_div()" /><i class="mdi mdi-window-close"></i> 关闭本窗口</button>
+      <div></div>
+    </div>
+  </div>
+  <div id="over"></div>
+
+  <div class="card">
+    <div class="card-body">
+      <h3 class="card-title">当前判题信息</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>项目</th><th>数据</th>
+            <th>项目</th><th>数据</th>
+            <th>项目</th><th>数据</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>试卷编号</td><td>{{ paper.pid }}</td>
+            <td>试卷名称</td><td>{{ paper.pname }}</td>
+            <td>出题老师</td><td>{{ paper.teaname }}</td>
+          </tr>
+          <tr>
+            <td>是否开放</td>
+            <td v-if="paper.penabled == 'no'"><label class="badge badge-danger">否</label></td>
+            <td v-if="paper.penabled == 'yes'"><label class="badge badge-success">是</label></td>
+            <td>主观题数量</td><td>{{ count }}</td>
+            <td>当前学生</td><td class="font-weight-bold">{{ stuid }}</td>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <hr>
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title">提交答案列表</h2>
+      <p class="card-description">请在下方对该学生主观题进行评分；若该记录已被评分，则显示的是最新一次提交的分数；需查看题干或答案请点击“查看题目”按钮</p>
+      <table class="table">
+        <thead>
+          <th>(#)</th>
+          <!-- <th>题目编号</th> -->
+          <th>查看题目</th>
+          <th>学生答案</th>
+          <th>本题分值</th>
+          <th>本题得分</th>
+          <th colspan="2">操作</th>
+        </thead>
+        <tbody>
+          <tr v-for="(pro, index) in anslist">
+            <td>{{ index + 1 }}</td>
+            <!-- <td>{{ pro.id }}</td> -->
+            <td><button type="button" class="btn btn-gradient-info btn-sm" @click="show_pro(pro.id)"><i class="mdi mdi-eye"></i></button></td>
+            <td class="font-weight-bold">{{ pro.answer }}</td>
+            <td>{{ pro.point }}</td>
+            <td><input type="number" v-bind:max="pro.point" min="0" class="form-control" v-model="pro.score" v-bind:value="pro.score" /></td>
+            <td><button type="button" class="btn btn-gradient-danger btn-sm" @click="this_zero(index)"> 本题零分</button></td>
+            <td><button type="button" class="btn btn-gradient-success btn-sm" @click="this_full(index, pro.score)"> 本题满分</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <p v-if="confirmed == 'no'">    
+        <button type="button" class="btn btn-gradient-success btn-fw" @click="submit('only')"><i class="mdi mdi-file-check"></i> 保存当前主观题成绩</button>
+        <button type="button" class="btn btn-gradient-success btn-fw" @click="submit('back')"><i class="mdi mdi-keyboard-return"></i> 保存并返回提交列表</button>
+        <button type="button" class="btn btn-gradient-success btn-fw" @click="submit('next')"><i class="mdi mdi-subdirectory-arrow-right"></i> 保存并进入下个学生</button>
+      </p>
+      <p v-if="confirmed == 'yes'">该学生成绩已提交，不允许修改！</p>
+    </div>
+  </div>
+</div>
+
+<script src="../../js/judge-zhuguan.js"></script>
+
+</body>
+</html>

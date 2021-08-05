@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>在线考试系统 - 管理员</title>
+  <script src="../../js/jquery-3.3.1.min.js"></script>
+  <script src="../../js/vue.min.js"></script>
+  <script src="../../js/vue-resource.min.js"></script>
+  <script src="../../js/common.js"></script>
+  <script src="../../backend.js"></script>
+  <link rel="stylesheet" href="../../vendors/iconfonts/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/overdiv.css">
+  <link rel="shortcut icon" href="../../images/favicon.png" />
+</head>
+
+<body class="content-wrapper">
+<div class="float_top">
+  <button class="btn btn-inverse-info btn-sm" onclick="javascript:smoothscroll();"><i class="mdi mdi-format-vertical-align-top"></i> 返回顶部</button>
+</div>
+
+<div id="usermanage">
+  <div class="page-header">
+    <h1>添加用户</h1>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6 grid-margin stretch-card">
+      <div class="card">
+      <div class="card-body">
+        <h3 class="card-title">创建用户</h3>
+        <p class="card-description">请在下面输入用户名和密码，并选定用户角色</p>
+        <form class="forms-sample">
+          <div class="form-group">
+            <label for="exampleInputUsername2">用户名</label>
+            <input class="form-control" type="text" id="problem" v-model="username" placeholder="输入用户名..." >
+          </div>
+          <div class="form-group">
+            <label for="exampleInputUsername2">密码</label>
+            <input class="form-control" type="text" id="problem" v-model="password" placeholder="输入密码..." >
+          </div>
+          <div class="form-group">
+            <label for="exampleInputUsername2">角色</label>
+            <select v-model="usertype" name="usertype" class="form-control">
+              <option value="">选择一个用户角色</option>
+              <option value="teacher">教师用户</option>
+              <option value="student">学生用户</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn-gradient-success" @click="insert()" /> 添加用户</button>
+          <button type="reset" class="btn btn-gradient-warning" @click="reset_form()" /> 清空输入</button>
+        </form>
+      </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6 grid-margin stretch-card">
+      <div class="card">
+      <div class="card-body">
+        <h3 class="card-title">批量导入用户</h3>
+        <p class="card-description">请下载 Excel 模板填写后上传：<a href="../../files/upload-users-template.xls">下载模板</a></p></p>
+        <!--
+        <p>角色名称： <label class="badge badge-info">student</label> （学生用户）或 <label class="badge badge-success">teacher</label> （教师用户）<br>例如：
+          <blockquote class="blockquote">10001 password student<br>20001 password teacher</blockquote>
+        </p>
+        <textarea rows="5" cols="50" class="form-control" id="batch_names" v-model="batch_names" placeholder="user password role"></textarea><br>
+        <button type="button" class="btn btn-gradient-success" @click="batch_insert()" /> 批量添加</button>
+        <button type="reset" class="btn btn-gradient-warning" @click="reset_batch()" /> 清空输入</button>
+        -->
+        <p>
+          请按照表格内提示准确填写，不要修改模板中表格结构。
+        </p>
+        <p>
+          <input type="file" id="upload_userlist" class="form-control">
+        </p>
+        <p>
+          <button type="button" class="btn btn-gradient-primary btn-fw" @click="upload_userlist()" /><i class="mdi mdi-cloud-upload"></i> 上传</button>
+        </p>  
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="../../js/admin-create.js"></script>
+
+</body>
+</html>
